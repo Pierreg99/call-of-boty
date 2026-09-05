@@ -73,9 +73,13 @@ export function spawnBot(
   mesh.position.copy(pos);
   scene.add(mesh);
   const bodyMesh = mesh.userData.body as THREE.Mesh;
-  bodyMesh.userData.botId = nextId;
+  const id = nextId++;
+  mesh.userData.botId = id;
+  mesh.traverse((o) => {
+    o.userData.botId = id;
+  });
   return {
-    id: nextId++,
+    id,
     mesh,
     bodyMesh,
     state: 'Idle',
@@ -111,6 +115,20 @@ export class BotSystem {
       p.y = 0;
       this.bots.push(spawnBot(scene, p));
     }
+  }
+
+  reset(scene: THREE.Scene, points: THREE.Vector3[], count: number): void {
+    for (const b of this.bots) {
+      scene.remove(b.mesh);
+      b.mesh.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (m.geometry) m.geometry.dispose();
+      });
+    }
+    this.bots = [];
+    this.kills = 0;
+    nextId = 1;
+    this.spawnWave(scene, points, count);
   }
 
   living(): Bot[] {

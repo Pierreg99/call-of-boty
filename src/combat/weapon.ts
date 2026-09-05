@@ -64,6 +64,14 @@ export class WeaponController {
     return true;
   }
 
+  reset(): void {
+    this.mag = this.stats.magSize;
+    this.reserve = this.stats.reserve;
+    this.reloading = false;
+    this.reloadAt = 0;
+    this.lastShot = 0;
+  }
+
   update(now: number): void {
     if (this.reloading && now >= this.reloadAt) {
       const need = this.stats.magSize - this.mag;

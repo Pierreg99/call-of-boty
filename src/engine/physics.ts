@@ -53,6 +53,23 @@ export class PhysicsWorld {
     this.world.step(1 / 60, clamped, 3);
   }
 
+  /** True when the body has a contact with upward normal (standing on something). */
+  isGrounded(body: CANNON.Body, upDot = 0.5): boolean {
+    for (const contact of this.world.contacts) {
+      let other: CANNON.Body | null = null;
+      let normalY = 0;
+      if (contact.bi === body) {
+        other = contact.bj;
+        normalY = -contact.ni.y;
+      } else if (contact.bj === body) {
+        other = contact.bi;
+        normalY = contact.ni.y;
+      }
+      if (other && other.mass === 0 && normalY > upDot) return true;
+    }
+    return false;
+  }
+
   sync(): void {
     for (const [body, mesh] of this.meshes) {
       mesh.position.set(body.position.x, body.position.y, body.position.z);

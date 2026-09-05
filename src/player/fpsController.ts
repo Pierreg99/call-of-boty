@@ -48,6 +48,17 @@ export class FpsController {
     return this.yaw;
   }
 
+  respawn(x: number, y: number, z: number): void {
+    this.body.position.set(x, y, z);
+    this.body.velocity.set(0, 0, 0);
+    this.body.angularVelocity.set(0, 0, 0);
+    this.pitch = 0;
+    this.yaw = 0;
+    this.shakeAmp = 0;
+    this.bobPhase = 0;
+    this.jumpQueued = false;
+  }
+
   addShake(amp: number): void {
     this.shakeAmp = Math.min(0.35, this.shakeAmp + amp);
   }
@@ -58,11 +69,10 @@ export class FpsController {
     this.pitch = Math.max(-1.45, Math.min(1.45, this.pitch));
   }
 
-  update(dt: number, input: FpsInput, locked: boolean): void {
+  update(dt: number, input: FpsInput, locked: boolean, grounded = false): void {
     if (!locked) return;
 
-    const vy = this.body.velocity.y;
-    this.onGround = Math.abs(vy) < 0.35 && this.body.position.y < 1.75;
+    this.onGround = grounded || (Math.abs(this.body.velocity.y) < 0.2 && this.body.position.y < 1.2);
 
     const wish = new THREE.Vector3();
     if (input.forward) wish.z -= 1;

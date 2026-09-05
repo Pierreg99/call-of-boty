@@ -13,6 +13,7 @@ import { GameAudio, vibrate } from './audio/audio';
 import { Hud } from './ui/hud';
 
 const GOAL_KILLS = 8;
+const SPAWN = new THREE.Vector3(0, 2, 16);
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const overlay = document.getElementById('overlay')!;
@@ -22,7 +23,7 @@ const quality = settingsFor(detectQuality());
 const scene = new THREE.Scene();
 const physics = new PhysicsWorld();
 const level = buildLevel(scene, physics);
-const playerBody = physics.addPlayerBody(0.35, 1.6, new THREE.Vector3(0, 2, 16));
+const playerBody = physics.addPlayerBody(0.35, 1.6, SPAWN);
 const player = new FpsController(playerBody);
 scene.add(player.yawObject);
 
@@ -40,6 +41,9 @@ const hud = new Hud();
 hud.setHealth(100);
 hud.setAmmo(weapon.mag, weapon.reserve, weapon.stats.name);
 hud.setObjective(0, GOAL_KILLS);
+
+const overlayTag = overlay.querySelector('.tag') as HTMLElement | null;
+const DEFAULT_TAG = 'PROCEDURAL PHYSICS FPS · SYSTEMS 1–5';
 
 const input: FpsInput = {
   forward: false,
@@ -64,6 +68,21 @@ level.group.traverse((o) => {
   if ((o as THREE.Mesh).isMesh) levelColliders.push(o);
 });
 
+function redeploy(): void {
+  playerHp = 100;
+  won = false;
+  player.respawn(SPAWN.x, SPAWN.y, SPAWN.z);
+  weapon.reset();
+  bots.reset(scene, level.spawnPoints, GOAL_KILLS);
+  hud.setHealth(100);
+  hud.setAmmo(weapon.mag, weapon.reserve, weapon.stats.name);
+  hud.setObjective(0, GOAL_KILLS);
+  hud.hideWin();
+  hud.clearFeed();
+  if (overlayTag) overlayTag.textContent = DEFAULT_TAG;
+  startBtn.textContent = 'DEPLOY';
+}
+
 function setLocked(v: boolean): void {
   locked = v;
   overlay.classList.toggle('visible', !v);
@@ -74,6 +93,7 @@ function setLocked(v: boolean): void {
 }
 
 startBtn.addEventListener('click', () => {
+  if (playerHp <= 0 || won) redeploy();
   canvas.requestPointerLock();
 });
 
@@ -143,15 +163,16 @@ function damagePlayer(amount: number, from: THREE.Vector3): void {
   if (playerHp <= 0) {
     document.exitPointerLock();
     overlay.classList.add('visible');
-    const tag = overlay.querySelector('.tag');
-    if (tag) tag.textContent = 'SYSTEM FAILURE — REDEPLOY';
+    if (overlayTag) overlayTag.textContent = 'SYSTEM FAILURE — REDEPLOY';
+    startBtn.textContent = 'REDEPLOY';
+    audio.sting(false);
   }
 }
 
 function tryShoot(now: number): void {
   if (input.reload) {
     if (weapon.startReload(now)) {
-      /* reload started */
+      audio.reload();
     }
     input.reload = false;
   }
@@ -160,7 +181,10 @@ function tryShoot(now: number): void {
   if (!input.fire || !locked || won) return;
   const result = weapon.tryFire(now, input.ads);
   if (!result.fired) {
-    if (weapon.mag <= 0) weapon.startReload(now);
+    if (weapon.mag <= 0 && weapon.reserve > 0) {
+      if (weapon.startReload(now)) audio.reload();
+    }
+    else if (weapon.mag <= 0) audio.empty();
     return;
   }
 
@@ -203,10 +227,16 @@ function tryShoot(now: number): void {
         if (killed) {
           hud.pushKill(`BOT-${bot.id}`);
           hud.setObjective(bots.kills, GOAL_KILLS);
+          audio.kill();
           vibrate(50, 0.4, 0.9);
           if (bots.kills >= GOAL_KILLS && !won) {
             won = true;
             hud.showWin();
+            audio.sting(true);
+            startBtn.textContent = 'REDEPLOY';
+            if (overlayTag) overlayTag.textContent = 'SECTOR CLEARED — REDEPLOY';
+            document.exitPointerLock();
+            overlay.classList.add('visible');
           }
         }
       }
@@ -237,7 +267,8 @@ function frame(): void {
   const now = performance.now();
 
   physics.step(dt);
-  player.update(dt, input, locked);
+  const grounded = physics.isGrounded(playerBody);
+  player.update(dt, input, locked && playerHp > 0 && !won, grounded);
 
   const moving = player.velocityXZ.length();
   viewmodel.update(dt, lookDelta, input.ads, Math.min(1, moving / 6));
@@ -248,14 +279,18 @@ function frame(): void {
   tryShoot(now);
 
   const eye = player.eyeWorld();
-  audio.setListener(eye.x, eye.y, eye.z);
+  const look = player.lookDirection();
+  audio.setListener(eye.x, eye.y, eye.z, look.x, look.y, look.z);
   audio.updateSteps(dt, locked && moving > 1.2 && !input.jump, input.sprint, eye.x, 0, eye.z);
 
   bots.update(dt, eye, levelColliders, (origin, dir, dmg) => {
     audio.shot(origin.x, origin.y, origin.z, 0.85);
-    // player hit if ray roughly toward player
-    const toPlayer = eye.clone().sub(origin);
-    if (toPlayer.length() < 35 && dir.dot(toPlayer.normalize()) > 0.985) {
+    const toEye = eye.clone().sub(origin);
+    const dist = toEye.length();
+    if (dist > 35) return;
+    const tAlong = Math.max(0, dir.dot(toEye));
+    const closest = origin.clone().addScaledVector(dir, tAlong);
+    if (closest.distanceTo(eye) < 0.62) {
       damagePlayer(dmg, origin);
     }
   });

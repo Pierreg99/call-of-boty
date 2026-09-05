@@ -88,6 +88,15 @@ export class Hud {
     this.winBanner.hidden = false;
   }
 
+  hideWin(): void {
+    this.winBanner.hidden = true;
+  }
+
+  clearFeed(): void {
+    this.killFeed.replaceChildren();
+    this.dmgDirs.replaceChildren();
+  }
+
   toggleFps(): void {
     this.fpsCounter.hidden = !this.fpsCounter.hidden;
   }
