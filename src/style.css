@@ -203,6 +203,25 @@ body,
   color: #6aa8d8;
 }
 
+
+#health-fill.warn {
+  background: linear-gradient(90deg, #6b5a1a, #e6c35c);
+}
+#health-fill.critical {
+  background: linear-gradient(90deg, #6b1a22, #ff4455);
+  animation: hp-crit-pulse 0.9s ease-in-out infinite;
+}
+#health-text.critical {
+  color: #ff6670;
+}
+@keyframes hp-crit-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #health-fill.critical { animation: none; }
+}
+
 #bottom-bar {
   position: absolute;
   right: 22px;

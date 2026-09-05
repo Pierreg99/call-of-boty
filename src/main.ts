@@ -92,9 +92,18 @@ function setLocked(v: boolean): void {
   }
 }
 
-startBtn.addEventListener('click', () => {
+function requestDeploy(): void {
   if (playerHp <= 0 || won) redeploy();
   canvas.requestPointerLock();
+}
+
+startBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  requestDeploy();
+});
+
+overlay.addEventListener('click', () => {
+  requestDeploy();
 });
 
 document.addEventListener('pointerlockchange', () => {

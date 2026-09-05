@@ -75,6 +75,7 @@ Each system: implement, list 3 weaknesses, fix, proceed.
 2. `redeploy()` resets player, weapon, bots, HUD; REDEPLOY after fail/win.
 3. cannon-es contact normals via `PhysicsWorld.isGrounded`.
 4. Single `deploy.yml` Pages workflow; audio win/lose stings + reload/empty cues.
+5. Overlay click-anywhere deploys; health fill warn (≤55) / crit pulse (≤30).
 
 ## Build gate
 

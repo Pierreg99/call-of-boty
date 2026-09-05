@@ -38,7 +38,10 @@ export class Hud {
   setHealth(hp: number, max = 100): void {
     const pct = Math.max(0, Math.min(100, (hp / max) * 100));
     this.healthFill.style.width = `${pct}%`;
+    this.healthFill.classList.toggle('critical', pct <= 30);
+    this.healthFill.classList.toggle('warn', pct > 30 && pct <= 55);
     this.healthText.textContent = String(Math.ceil(hp));
+    this.healthText.classList.toggle('critical', pct <= 30);
   }
 
   setAmmo(mag: number, reserve: number, name: string): void {
