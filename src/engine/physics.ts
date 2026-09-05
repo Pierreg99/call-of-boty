@@ -37,9 +37,10 @@ export class PhysicsWorld {
       position: new CANNON.Vec3(pos.x, pos.y, pos.z),
       linearDamping: 0.12,
     });
+    // cannon-es Cylinder is Z-aligned; rotate to stand on Y
     const shape = new CANNON.Cylinder(radius, radius, height, 12);
     const q = new CANNON.Quaternion();
-    q.setFromEuler(0, 0, 0);
+    q.setFromEuler(Math.PI / 2, 0, 0);
     body.addShape(shape, new CANNON.Vec3(0, 0, 0), q);
     body.collisionFilterGroup = 1;
     body.collisionFilterMask = 1;
