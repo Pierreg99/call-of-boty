@@ -53,7 +53,7 @@ Each system: implement, list 3 weaknesses, fix, proceed.
 ## System 5 — Performance and polish
 
 ### Weaknesses found
-1. Far bots kett full mesh detail (visor/head always on).
+1. Far bots kept full mesh detail (visor/head always on).
 2. Crosshair static; no ADS/fire feedback.
 3. No situational awareness HUD beyond numeric HP.
 
@@ -62,6 +62,21 @@ Each system: implement, list 3 weaknesses, fix, proceed.
 2. Dynamic crosshair spread classes for ADS and fire pulse.
 3. Tacmap minimap, killfeed, objective counter; streaming left as stub export in main.ts.
 
+## Ship polish (post systems 1–5)
+
+### Weaknesses found
+1. Head/visor hits missed bots — only torso carried `botId`.
+2. Death/win left the match stuck; DEPLOY did not reset HP/bots/ammo.
+3. Jump ground check used a crude Y threshold; capsule contacts ignored.
+4. Duplicate Pages workflows raced and cancelled each other.
+
+### Fixes applied
+1. Tag entire bot mesh tree with `botId`; parent walk resolves any part.
+2. `redeploy()` resets player, weapon, bots, HUD; REDEPLOY after fail/win.
+3. cannon-es contact normals via `PhysicsWorld.isGrounded`.
+4. Single `deploy.yml` Pages workflow; audio win/lose stings + reload/empty cues.
+
 ## Build gate
 
 `npm run build` must exit 0 before ship. Player-facing UI has no placeholder copy.
+
