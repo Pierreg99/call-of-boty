@@ -2,7 +2,7 @@
 
 Procedural **Three.js** browser FPS — Vite + TypeScript + Three.js r170+ + **cannon-es** physics. No external 3D assets (canvas / Data-URI procedural textures only).
 
-Built as systems *1 → 5** with documented iteration passes in [ITERATIONS.md](./ITERATIONS.md). Sibling comparison: [COMPARE_GROKY.md](./COMPARE_GROKY.md).
+Built as systems **1 → 5** with documented iteration passes in [ITERATIONS.md](./ITERATIONS.md). Sibling comparison: [COMPARE_GROKY.md](./COMPARE_GROKY.md).
 
 ## Play
 
@@ -51,4 +51,4 @@ Eliminate **8** hostiles in the modular sector. Kill feed + tacmap track progres
 
 ## License
 
-MIT — gue [LICENSE](./LICENSE).
+MIT — see [LICENSE](./LICENSE).
