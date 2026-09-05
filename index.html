@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Call of Boty — procedural browser FPS" />
+    <title>Call of Boty</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+      <div id="hud" aria-hidden="false">
+        <div id="crosshair"><span class="ch-h"></span><span class="ch-v"></span></div>
+        <div id="hitmarker"></div>
+        <div id="vignette"></div>
+        <div id="film-grain"></div>
+        <div id="top-bar">
+          <div id="health-wrap">
+            <span class="label">ARMOR</span>
+            <div id="health-bar"><div id="health-fill"></div></div>
+            <span id="health-text">100</span>
+          </div>
+          <div id="objective">
+            <span id="obj-text">CLEAR SECTOR · 0/8</span>
+          </div>
+        </div>
+        <div id="minimap" aria-hidden="true">
+          <canvas id="minimap-canvas" width="140" height="140"></canvas>
+          <div id="minimap-label">TACMAP</div>
+        </div>
+        <div id="dmg-dirs"></div>
+        <div id="bottom-bar">
+          <div id="ammo">
+            <span id="ammo-mag">30</span>
+            <span class="sep">/</span>
+            <span id="ammo-reserve">120</span>
+            <span id="weapon-name">BOTY-AR</span>
+          </div>
+        </div>
+        <div id="kill-feed"></div>
+        <div id="fps-counter" hidden>FPS --</div>
+        <div id="overlay" class="visible">
+          <div class="panel">
+            <h1>CALL OF <span>BOTY</span></h1>
+            <p class="tag">PROCEDURAL PHYSICS FPS · SYSTEMS 1–5</p>
+            <p class="hint">Click to deploy · WASD move · Shift sprint · Space jump · LMB fire · RMB ADS · R reload · Esc release · F3 FPS</p>
+            <button id="start-btn" type="button">DEPLOY</button>
+          </div>
+        </div>
+        <div id="win-banner" hidden>
+          <div class="win-title">SECTOR CLEARED</div>
+          <div class="win-sub">ALL HOSTILES DOWN</div>
+        </div>
+        <div id="damage-flash"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

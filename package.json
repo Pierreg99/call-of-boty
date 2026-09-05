@@ -1,0 +1,23 @@
+{
+  "name": "call-of-boty",
+  "version": "1.0.0",
+  "description": "Call of Boty — procedural Three.js browser FPS with cannon-es physics",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["three.js", "fps", "vite", "typescript", "cannon-es"],
+  "author": "Pierreg99",
+  "license": "MIT",
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}
